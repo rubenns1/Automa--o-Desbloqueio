@@ -2,11 +2,31 @@
 #include <File.au3>
 #include <Misc.au3>
 
+Global Const $app = "App v0.1"
+Global Const $hFile = FileOpen(@Desktopdir & "\wSaídas.txt", 0)
+
 HotKeySet("{ESC}", "Close")
 HotKeySet("{F2}", "_Pause")
 
-$hFile = FileOpen(@Desktopdir & "\wSaídas.txt", 0)
+Main()
 
+Func Main()
+	If (MsgBox(4+32, $app, "Deseja realizar o download dos relatórios (*.PDF)?") = 6) Then
+		$getUrl = InputBox($app, "Informe a URL da base:", null)
+		$fmtUrl = $getUrl & "/Relsaidas/pickingacompanhamento/"
+		$countLines = _FileCountLines($hFile)
+
+		For $i = 1 To $countLines
+			$fmtLines = FileReadLine($hFile, $i)
+			ConsoleWrite($fmtUrl & $fmtLines & @CRLF)
+			ShellExecute($fmtUrl & $fmtLines)
+		Next
+	Else
+		Exit
+	EndIf
+EndFunc
+
+Func Funcs()
 While 1
 	$hLine = FileReadLine($hFile)
 	If @error = -1 Then ContinueLoop
@@ -23,10 +43,10 @@ While 1
 	;Send("{ENTER}{ENTER}")
 	_Pause()
 WEnd
-
-FileClose($hFile)
+EndFunc
 
 Func Close()
+	FileClose($hFile)
 	Exit
 EndFunc
 
